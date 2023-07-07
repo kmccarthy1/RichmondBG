@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sleek Leaflet Web Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+  </style>
+</head>
+<body>
+  <div href="" id="map"></div>
+  <div id="basemap-selector">
+    <select id="basemap-dropdown">
+      <option value="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">OpenStreetMap</option>
+      <option value="https://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png">Stamen Toner</option>
+      <option value="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png">OpenTopoMap</option>
+    </select>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <!--bringing in leaflet ajax-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+
+  <script>
+    // Create a Leaflet map centered at a specific location
+    var map = L.map('map').setView([37.529, -77.435], 12);
+
+    // Add the base map tiles from OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      maxZoom: 18
+    }).addTo(map);
+
+    // Add your GeoJSON data to the map
+    var geojsonLayer = L.geoJSON().addTo(map);
+    //from leaflet1
+    var RichmondBG = new L.geoJson.ajax("RichmondBG.geojson");
+       RichmondBG.addTo(map);
+    //end
+    // Fetch and add your GeoJSON data file
+    // fetch('Users/homebase/Desktop/2023_repos/RichmondBG/RichmondBG.geojson')
+    //   .then(function(response) {
+    //     return response.json();
+    //   })
+    //   .then(function(data) {
+    //     geojsonLayer.addData(data);
+    //   })
+    //   .catch(function(error) {
+    //     console.error('Error:', error);
+    //   });
+
+    // adding basemaps
+
+    var basemaps = {
+      "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+        maxZoom: 18
+      }),
+
+      "Stadia Dark": L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=5f3d4fda-627d-44df-85cd-d7c70ed4c1a2', {
+            maxZoom: 20,
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        }),
+        "MapBox Streets": L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=YOUR_MAPBOX_ACCESS_TOKEN', {
+        attribution: 'Map data © <a href="https://www.mapbox.com">MapBox</a> contributors',
+        maxZoom: 18
+      }),
+      "OpenTopoMap": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://opentopomap.org">OpenTopoMap</a>',
+        maxZoom: 17
+      })
+      // Add more basemap tile layers as needed
+    };
+
+    // Add the default basemap to the map
+    basemaps["OpenStreetMap"].addTo(map);
+
+    // Handle basemap selection from the dropdown menu
+    document.getElementById("basemap-dropdown").addEventListener("change", function() {
+      var selectedBasemap = this.value;
+      updateBasemap(selectedBasemap);
+    });
+
+    // Function to update the map's basemap tile layer
+    function updateBasemap(basemap) {
+      // Remove current basemap layer
+      map.eachLayer(function(layer) {
+        if (layer instanceof L.TileLayer) {
+          map.removeLayer(layer);
+        }
+      });
+
+      // Add the selected basemap tile layer to the map
+      basemaps[basemap].addTo(map);
+    }
+
+    L.control.layers(basemaps).addTo(map);
+  </script>
+</body>
+</html>
